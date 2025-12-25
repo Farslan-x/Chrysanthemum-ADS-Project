@@ -3,7 +3,7 @@
 This project involves the detailed analysis and visualization of crashes involving vehicles equipped with automated driving systems (ADS), based on data provided by the NHTSA (National Highway Traffic Safety Administration).
 
 ## 👥 Project Team
-* **Bengisu ÖZBİLEN** -
+* **Bengisu ÖZBİLEN** 
 * **Ferhat ARSLAN**
 
 ## 📊 Project Summary
