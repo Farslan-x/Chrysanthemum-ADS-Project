@@ -1,0 +1,252 @@
+---
+title: "Krizantem"
+toc: true
+number-sections: true
+highlight-style: pygments
+format:
+  html: 
+    code-fold: false
+    html-math-method: katex
+    code-overflow: wrap
+crossref:
+  chapters: true
+  fig-title: '**Eekil**'
+  fig-labels: arabic
+  title-delim: "**.**"
+  tbl-title: '**Tablo**'
+editor: source
+author: Bengisu CZBD0LEN 21255061 Ferhat ARSLAN 21255601
+---
+
+# Verilerin OkutulmasD1
+
+```{r}
+#| warning: false
+library(readxl)
+Krizantem <- read_excel("data/Krizantem.xlsx")
+
+```
+
+# Projenin Czeti
+
+NHTSA(Ulusal Kara Yolu Trafik GC<venliDi D0daresi), tanD1mlanmD1E C<reticilerin ve operatC6rlerin, otomatik sC<rC<E sistemleri veya SAE Seviye 2 geliEmiE sC<rC<cC< destek sistemleri ile donatD1lmD1E araC'larD1n dahil olduDu belirli kazalarD1 ajansa bildirmesini gerektiren bir Daimi Genel Emir yayD1nladD1. Genel SipariE, NHTSA'nD1n C<reticilerden ve operatC6rlerden ADS araC'larD1yla iliEkili gerC'ek dC<nya kazalarD1na iliEkin zamanD1nda ve Eeffaf bildirim almasD1na olanak tanD1r. Bu verilerle NHTSA, ADS teknolojileri hakkD1nda gC<venlik endiEelerini artD1ran kazalara daha fazla araEtD1rma ve uygulama yoluyla yanD1t verebilir.
+
+NHTSA bir gC<venlik kusuru bulursa , gC<venli olmayan araC'larD1n halka aC'D1k yollardan C'D1karD1lmasD1nD1 veya uygun Eekilde dC<zeltilmesini saDlamak iC'in harekete geC'ecektir.
+
+
+# Projede KullanD1lan KC<tC<phaneler
+
+```{r}
+#| warning: false
+library(tidyverse)
+library(kableExtra)
+library(ggpubr)
+library(skimr)
+library(ggthemes)
+library(dplyr)
+library(flextable)
+library(ggplot2)
+
+```
+
+# Kentlerin Haritada YoDunluDunu GC6rselleEtirdiDimiz Grafik Ccesinde D0ndirilmesi Gereken Paketler
+
+```{r}
+#install.packages("tidyverse")
+#install.packages("sp") #for spatial data
+#install.packages("map")
+#install.packages("mapproj")
+#install.packages("ggmap")
+#install.packages("DeducerSpatial")
+#install.packages("maps")
+```
+
+```{r}
+#| warning: false
+head(Krizantem)
+```
+
+```{r}
+#| warning: false
+glimpse(Krizantem)
+
+```
+
+```{r}
+#| warning: false
+summary(Krizantem)
+```
+
+```{r}
+#| warning: false
+ggplot(Krizantem, aes(x = Report_Submission_Date))+
+  coord_polar(theta = "x", direction = 1)+
+  geom_bar(fill="darkolivegreen3" , colour="black") +
+  theme(plot.background = element_rect(fill ="rosybrown2"), axis.text.x = element_text(size = 7))+
+  theme(plot.background = element_rect(fill = "rosybrown2"))+
+   labs(title = "Rapor Teslim Tarihi",
+       x = NULL,
+       y = NULL )
+```
+
+# Rapor Teslim Tarihi
+
+YukarD1da gC6rselleEtirilmiE olan grafikte rapor teslim tarihlerinin hangi yD1llarda ve hangi aylarda teslim edildiDi gC6sterilmiEtir.
+
+
+```{r}
+#| warning: false
+ggplot(Krizantem, aes(x = City))+
+geom_bar(fill="darkolivegreen3", colour="black")+
+geom_text(stat = "count", aes(label=..count..),hjust=-0.4, size =3)+
+theme(plot.background = element_rect(fill ="rosybrown2"), axis.text.x = element_text(size = 8))+
+coord_flip()+
+labs(title = "Kent",
+     x = NULL,
+     y = NULL)
+```
+
+## YaEanan KazalarD1n DaDD1lD1m ve YoDunluk Grafikleri
+
+AEEaDD1da ve YukarD1da gC6rselleEtirmiE olduDumuz grafikleri bir biri ile iliEkili olduDu halde ayrD1 ayrD1 daha detaylD1 gC6stermek istedik.
+
+Veri setimiz Otomatik sC<rC<E kazalarD1nD1, Amerikada ki eyaletler C<zerinden incelemiE. Bunun C<zerine daDD1lD1mD1 detaylD1 Eekilde bar grafiDi C<zerinde gC6stermeyi, yoDunluDu ise harita C<zerinde gC6stermeyi tercih ettik.
+
+D0ncelediDimiz grafik verileri sonucunda en fazla kazanD1n California eyaletinin San Francisco Eehrinde olduDunu gC6rdC<k. DiDer eyaletlerde ise gC6zle gC6rC<lecek ciddi farklar olmadD1DD1nD1 ve daDD1lD1mD1n neredeyse eEit olduDunu farkettik.San Francisco da diDer eyaletlere oranla neden bu kadar fazla bir oran gC6rC<lmesinin sebeplerine baktD1DD1mD1zda. California eyaletinde 39.24 milyonla en fazla nC<fusa sahip eyalet olduDunu fark ettik.Otomastik sC<rC<E sistemlerinin de yoDun trafikte, ani sollamalarda ve yaya geC'iElerinde daha fazla arD1za verdiDinde bildiDimizden dolayD1 fazla oranD1n sebebini bulmuE olduk.
+
+```{r}
+#| warning: false
+
+require(maps)
+map("usa")
+map("county")
+data(Krizantem)
+data(county.fips)
+colors = c("#F1EEF6", "#D4B9DA", "#C994C7", "#DF65B0", "#DD1C77", "#980043")
+unemp$colorB
+colorsmatched <- unemp$colorBuckets[match(county.fips$fips, unemp$fips)]
+map("county", col = colors[colorsmatched], fill = TRUE, resolution = 0, lty = 1, projection = "polyconic")
+
+map("state", col = "white", fill = FALSE, add = TRUE, lty = 0, lwd = 0.2, projection = "polyconic")
+title("Amerikada yaEanan kazalarD1n eyaletlere gC6re yoDunluDu")
+leg.txt <- c("<2%", "2-4%", "4-6%", "6-8%", "8-10%", ">10%")
+legend("bottomright", leg.txt, horiz = FALSE, fill = colors,
+       box.lty=2, box.lwd=1, box.col="red4")
+```
+
+```{r}
+#| warning: false
+ggplot(data=Krizantem,aes(y=ADS_Equipped)) +
+geom_bar(fill="darkolivegreen3", colour="black", width = 0.6)+ theme(plot.background = element_rect(fill = "rosybrown2"))+
+  geom_text(stat = "count", aes(label=..count..),hjust=-0.44,color ="gray1" ,size =3)+
+theme(plot.background = element_rect(fill ="rosybrown2"), axis.text.x = element_text(size = 8))+
+   labs(title = "ADS DonanD1mlD1lD1DD1",
+       x = NULL,
+       y = NULL )
+```
+
+# ADS DonanD1mlD1DD1
+
+ADS: ADS(Otomatik SC<rC<E Sistemi), kazadan sonraki 30 saniye iC'inde herhangi bir zamanda kullanD1mdaysa ve kaza mal hasarD1 veya yaralanmayla sonuC'lanmD1Esa, Genel Kararda adD1 geC'en kuruluElar bir kazayD1 bildirmelidir.
+
+YukarD1da oluEturulan grafikte, veri setimizde ADS donanD1mD1na sahip kaC' adet araC' bulunduDu gC6rselleEtirilmiEtir.
+
+SonuC' olarak Otomatik SC<rC<E Sistemine sahip araC'larda, kazadan sonraki 30 saniye iC'inde herhangi bir zamanda kullanD1mda olmayan C'ok az sayD1da araC' olduDunu gC6zlemledik.
+
+
+```{r}
+#| warning: false
+ggplot(Krizantem)+
+  geom_bar(mapping = aes(x = Lighting,fill = Lighting),position = "dodge", show.legend = TRUE,width=1, color ="black")+
+  theme(plot.background = element_rect(fill =""), axis.text.x = element_text(size = 8.4,color = "firebrick4"))+
+  theme(plot.background = element_rect(fill = "burlywood2"))+
+  theme(aspect.ratio = 1)+
+  labs(x =NULL,y = NULL)+
+  coord_flip()+
+  coord_polar()
+```
+
+# Kaza AnD1nda Hava AydD1nlD1k Durumu
+
+YukarD1da gC6rselleEtirilmiE olan grafikte , gC<n D1ED1DD1, akEam karanlD1DD1 ve Eafak vakti olarak tanD1mlanmD1E 3 farklD1 bC6lC<mde daDD1lD1m ve yoDunluk grafiDi gC6rebiliyoruz.
+
+Bu deDerleri bu grafikte gC6stermemizin en bC<yC<k amaC'larD1ndan birisi, daDD1lD1mD1 rahat bir Eekilde gC6rebilirken aynD1 zamanda yoDunluDu da yansD1tmaktD1.
+
+SonuC' olarak grafiDi incelediDimizde,  akEam karanlD1DD1 ve Eafak vakti arasD1nda gC<n D1ED1DD1na gC6re ciddi bir fark gC6rdC<k.Otomatik sC<rC<E sistemlerinin akEam karanlD1DD1 ve Eafak vakti zamanlarD1nda daha verimsiz C'alD1EtD1DD1nD1 gC6rdC<k. Bu konu C<zerinde durulduDunda otomatik sC<rC<EC<n geliEtirilmesinde fayda saDlayacak bir C'ok etken ortaya C'D1kabiliceDini dC<EC<ndC<k.
+
+```{r}
+#| warning: false
+ggplot(Krizantem,aes(x=Make))+
+geom_bar(fill="darkolivegreen3", colour="black", width = 0.7)+
+geom_text(stat = "count", aes(label=..count..),hjust=-0.44,color ="red4" ,size =3)+
+theme(plot.background = element_rect(fill ="rosybrown2"), axis.text.x = element_text(size = 8))+
+coord_flip()+
+labs(title = "AraC' MarkalarD1",
+     x = NULL,
+     y = NULL)
+
+```
+
+# Araba MarkalarD1
+
+YukarD1da gC6rselleEtirilmiE olan grafikte veri setinde bulunan hangi marka araC'larD1n, kaC' adet bulunduDu detaylD1 olarak gC6sterilmiEtir.
+
+GrafiDi incelediDimizde Jaguar ve Cruise' un ciddi bir farkla veri setinde fazlalD1DD1nD1 fark ettik. DiDer markalarD1n daDD1lD1mD1nD1n birbirine yakD1n olduDunu gC6rdC<k. SonuC' olarak 2021-2022 yD1llarD1 arasD1nda incelenen veri setimizde , diDer araC' markalarD1na gC6re Jaguar ve Cruise markalarD1n gC<venliDinin zayD1flD1DD1 C6n planda gC6rC<lmektedir.
+
+```{r}
+#| warning: false
+ggplot(Krizantem)+
+  geom_bar(mapping = aes(x = Roadway_Surface,fill = Roadway_Surface),position = "dodge" ,show.legend = TRUE,width=1, color ="black")+
+  theme(plot.background = element_rect(fill =""), axis.text.x = element_text(size = 8.4,color = "firebrick4"))+
+  theme(plot.background = element_rect(fill = "burlywood2"))+
+  theme(aspect.ratio = 1)+
+  labs(x =NULL,y = NULL)+
+  coord_flip()+
+  coord_polar()
+```
+
+## Kaza Ccesinde Asfalt Durum Tipleri
+
+YukarD1da gC6rselleEtirilmiE olan grafikte aslD1nda incelediDimiz veri setinin en C6nemli noktalarD1ndan birisi olan Roadway Surface (Olay anD1ndaki asfalt yC<zeyi durumu) gC6sterilmiEtir.
+
+GrafiDi incelediDimizde olay anD1nda asflat yC<zeyinin hangi durumda olduDu daDD1lD1mD1nD1 gC6rebiliriz. Hangi asfalt yC<zeyinde, ne kadar yoDunlukta kaza olduDu da gC6rebiliriz.AraC'larD1n D1slak ve kuru zeminde daha C'ok kaza yaptD1DD1 sonucuna varD1lmD1EtD1r. Bu yC6nde geliEtirmeler yapD1labilir ve C6nlemler alD1nabilir.
+
+# D0liEkilendirme Grafikleri
+
+```{r}
+#| warning: false
+ggplot(Krizantem,aes(x=Make,y=Model_Year))+
+  geom_hex(color="black",alpha=14)+
+  scale_fill_gradient(low = "firebrick1",high = "firebrick4")+
+  theme(plot.background = element_rect(fill ="burlywood2"), axis.text.x = element_text(size = 8))+
+  coord_flip()+
+  labs(title = "",
+     x = NULL,
+     y = NULL)
+
+```
+
+## Araba MarkalarD1 ile Model YD1lD1 D0liEki GrafiDi
+
+YukarD1da gC6rselleEtirilmiE olan grafikte, genel karar kapsamD1nda kuruma bildirilen olay raporlarD1nda hangi marka araC'larD1n, model yD1llarD1na gC6re yoDunluDu paylaED1lmD1EtD1r.
+
+GrafiDi incelediDimiz zaman hangi marka araC'larD1n, model yD1llarD1na gC6re yaEadD1klarD1 kazanD1n sD1klD1DD1nD1 gC6rebilir. Buna ek olarak hangi marka araC'larD1n daha gC<venli sC<rC<E desteDine sahip olduDunuda C'D1karabiliriz. GrafiDe baktD1DD1mD1zda Navya marka araC'larD1n daha gC<venli sC<rC<E desteDine sahip olduDunu gC6rdC<k.
+
+```{r}
+#| warning: false
+ggplot(Krizantem,aes(x=Report_Version,y = Make))+
+  geom_bin_2d()+
+  scale_fill_gradient(low = "mediumorchid1",high = "mediumorchid4")+ 
+theme(plot.background = element_rect(fill ="burlywood2"), axis.text.x = element_text(size = 8))+
+  labs(title = "",
+     x = NULL,
+     y = NULL)
+```
+
+## Araba MarkalarD1 ile Rapor SC<rC<m D0liEki GrafiDi
+
+Genel karar kapsamD1nda kuruma bildirilen olay rapor sC<rC<mC< olarak veri setinde 1,2,3 Eeklinde bir sD1ralama mevcut.KuruluE C6nceden dosyalanan bir raporu gC<ncellediDinde, yeni bir sC<rC<m oluEturulur ve portal tarafD1ndan sD1ralD1 olarak numaralandD1rD1lD1r.
+
+YukarD1da gC6rselleEtirilmiE olan grafikte, Araba markalarD1nD1n rapor sC<rC<mleri ile iliEkilendirilmiE grafiDini paylaED1lmD1tD1r.
+
+GrafiDi incelediDimizde 1.2. ve 3. sD1ralamaya sahip olan Jaguar, Cruise ve Ford diDerlerine oranla ciddi fark gC6stermektedir.Bu konuda bir C'D1karD1m yapD1cak olursak eDer, bu C<C' marka araC'larD1n diDerlerine gC6re daha az tercih edileceDini sC6yleyebiliriz.
